@@ -98,31 +98,28 @@ const SortingPerformanceChart = () => {
     setPerformanceData(newPerformanceData);
   }, [arraySize, selectedAlgorithms]);
 
-  // Grafik oluştur
-  useEffect(() => {
+// Grafik oluştur
+useEffect(() => {
+    const ctx = document.getElementById('sortingPerformanceChart').getContext('2d');
+    
+    // Önceki Chart nesnesini kontrol et ve varsa yok et
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+  
     if (performanceData && Object.keys(performanceData).length > 0) {
-      const chartLabels = Object.keys(performanceData);
-      const chartDatasets = [];
-
-      // Seçili algoritmaları grafiğe ekle
-      selectedAlgorithms.forEach(algorithm => {
-        if (performanceData[algorithm] !== undefined) {
-          chartDatasets.push({
-            label: algorithm,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1,
-            data: [performanceData[algorithm]],
-          });
-        }
-      });
-
       const chartData = {
         labels: ['Performans'],
-        datasets: chartDatasets,
+        datasets: selectedAlgorithms.map((algorithm, index) => ({
+          label: algorithm,
+          backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.2)`,
+          borderColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`,
+          borderWidth: 1,
+          data: [performanceData[algorithm]],
+        })),
       };
-
-      const ctx = document.getElementById('sortingPerformanceChart').getContext('2d');
+  
       new Chart(ctx, {
         type: 'bar',
         data: chartData,
@@ -136,6 +133,8 @@ const SortingPerformanceChart = () => {
       });
     }
   }, [performanceData, selectedAlgorithms]);
+  
+  
 
   return (
     <div>
@@ -163,7 +162,7 @@ const SortingPerformanceChart = () => {
           </div>
         ))}
       </div>
-      <canvas id="sortingPerformanceChart" width="400" height="400"></canvas>
+      <canvas id="sortingPerformanceChart" width="200" height="100"></canvas>
     </div>
   );
 }
